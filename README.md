@@ -26,7 +26,9 @@
 
 ## 文档
 
-项目文档 document：[GitHub](https://opengoofy.github.io/crane4j/#/) / [Gitee](https://createsequence.gitee.io/crane4j-doc/#/)
+项目文档 document：[GitHub](https://opengoofy.github.io/crane4j/#/) / ~~[Gitee](https://createsequence.gitee.io/crane4j-doc/#/)~~
+
+>   由于 Gitee 的 Page 服务下线了，因此暂时只能访问 GitHub 的文档站
 
 ## 快速开始
 
