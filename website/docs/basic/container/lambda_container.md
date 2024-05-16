@@ -10,9 +10,9 @@ Container<String> container = Containers.forLambda(
     namespace, keys -> keys.stream().collect(Collectors.toMap(Function.identity(), Function.identity()))
 );
 
-// 获取全局上下文并注册容器
-Crane4jGlobalConfiguration configuration = SpringUtils.getBean(Crane4jGlobalConfiguration.class);
-configuration.registerContainer(container);
+// 获取操作门面并注册容器
+Crane4jTemplate crane4jTemplate = Crane4jTemplate.withDefaultConfiguration()
+crane4jTemplate.opsForContainer().registerContainer(container);
 ```
 
 其中，方法数据源的函数式接口 `DataProvider` 也提供了一些便捷的工厂方法：

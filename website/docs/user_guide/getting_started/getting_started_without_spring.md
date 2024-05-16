@@ -24,33 +24,33 @@
 
 ## 2.创建全局配置
 
-基于默认配置创建一个全局配置对象：
+基于默认配置创建一个操作门面：
 
 ~~~java
-// 创建全局配置对象
-Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+// 创建操作门面
+Crane4jTemplate crane4jTemplate = Crane4jTemplate.withDefaultConfiguration();
 ~~~
 
 ## 3.配置数据源
 
-在开始填充对象之前，你需要提前准备好一些数据源，并将其注册到全局配置对象中。
-
-在 crane4j 中，一个数据源对应一个数据源容器（`Container`），它们通过独一无二的命名空间 （`namespace`）进行区分。
-
-我们可以基于一个 `Map` 集合创建数据源容器，并将其注册到全局配置中：
+在开始填充对象之前，你需要提前准备好一些数据源，并将其注册到全局配置对象中。这里我们可以基于一个 `Map` 集合创建数据源容器，并将其注册到全局配置中：
 
 ~~~java
-// 基于 Map 集合创建一个数据源容器
-Map<Integer, String> map = new HashMap<>();
-map.put(1, "a");
-map.put(2, "b");
-map.put(3, "c");
-Container<Integer> container = Containers.forMap("test", map);
-// 注册到全局配置
-configuration.registerContainer(container);
+// 创建并注册数据源
+Map<Integer, String> map = MapBuilder.<Integer, String>create()
+    .put(1, "a").put(2, "b").put(3, "c")
+    .build();
+crane4jTemplate.opsForContainer()
+    .registerMapContainer("test", map);
 ~~~
 
 在后续通过命名空间 `test` 即可引用该数据源容器。
+
+:::tip
+
+在 crane4j 中，一个数据源对应一个数据源容器（`Container`），它们通过独一无二的命名空间 （`namespace`）进行区分，具体可参见 [数据源容器](./../../basic/container/container_abstract) 一节。
+
+:::
 
 ## 4.配置填充操作
 
@@ -72,17 +72,14 @@ public static class Foo {
 ## 5.触发操作
 
 ~~~java
-// 创建快速填充工具类
-OperateTemplate operateTemplate = ConfigurationUtil.createOperateTemplate(configuration);
-
 // 执行填充
 List<Foo> foos = Arrays.asList(new Foo(1), new Foo(2), new Foo(3));
-operateTemplate.execute(foos);
+crane4jTemplate.execute(foos);
 System.out.println(foos);
 // [Foo(id=1, name="a"), Foo(id=2, name="b"), Foo(id=3, name="c")]
 ~~~
 
-在创建填充工具类 `OperateTemplate` 以后，调用 `execute` 即可触发填充。
+直接调用操作门面的 `execute` 方法即可触发填充。
 
 ## 6.完整代码
 
@@ -90,23 +87,19 @@ System.out.println(foos);
 public class QuickStart {
 
     public static void main(String[] args) {
-        // 创建全局配置对象
-        Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+        // 创建操作门面
+        Crane4jTemplate crane4jTemplate = Crane4jTemplate.withDefaultConfiguration();
 
-        // 创建并注册数据源容器
-        Map<Integer, String> map = new HashMap<>();
-        map.put(1, "a");
-        map.put(2, "b");
-        map.put(3, "c");
-        Container<Integer> container = Containers.forMap("test", map);
-        configuration.registerContainer(container);
-
-        // 创建快速填充工具类
-        OperateTemplate operateTemplate = ConfigurationUtil.createOperateTemplate(configuration);
+        // 创建并注册数据源
+        Map<Integer, String> map = MapBuilder.<Integer, String>create()
+            .put(1, "a").put(2, "b").put(3, "c")
+            .build();
+        crane4jTemplate.opsForContainer()
+            .registerMapContainer("test", map);
 
         // 执行填充
         List<Foo> foos = Arrays.asList(new Foo(1), new Foo(2), new Foo(3));
-        operateTemplate.execute(foos);
+        crane4jTemplate.execute(foos);
         System.out.println(foos);
     }
 

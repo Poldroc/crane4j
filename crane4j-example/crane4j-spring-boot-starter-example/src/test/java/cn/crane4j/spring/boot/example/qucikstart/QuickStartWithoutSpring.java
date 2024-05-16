@@ -7,8 +7,10 @@ import cn.crane4j.core.container.Containers;
 import cn.crane4j.core.executor.BeanOperationExecutor;
 import cn.crane4j.core.parser.BeanOperationParser;
 import cn.crane4j.core.support.Crane4jGlobalConfiguration;
+import cn.crane4j.core.support.Crane4jTemplate;
 import cn.crane4j.core.support.OperateTemplate;
 import cn.crane4j.core.support.SimpleCrane4jGlobalConfiguration;
+import cn.hutool.core.map.MapBuilder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -23,27 +25,19 @@ import java.util.Map;
 public class QuickStartWithoutSpring {
 
     public static void main(String[] args) {
-        // 创建全局配置对象
-        Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
+        // 创建操作门面
+        Crane4jTemplate crane4jTemplate = Crane4jTemplate.withDefaultConfiguration();
 
-        // 创建并注册数据源容器
-        Map<Integer, String> map = new HashMap<>();
-        map.put(1, "a");
-        map.put(2, "b");
-        map.put(3, "c");
-        Container<Integer> container = Containers.forMap("test", map);
-        configuration.registerContainer(container);
-
-        // 创建快速填充工具类
-        OperateTemplate operateTemplate = new OperateTemplate(
-            configuration.getBeanOperationsParser(BeanOperationParser.class),
-            configuration.getBeanOperationExecutor(BeanOperationExecutor.class),
-            configuration.getTypeResolver()
-        );
+        // 创建并注册数据源
+        Map<Integer, String> map = MapBuilder.<Integer, String>create()
+            .put(1, "a").put(2, "b").put(3, "c")
+            .build();
+        crane4jTemplate.opsForContainer()
+            .registerMapContainer("test", map);
 
         // 执行填充
         List<Foo> foos = Arrays.asList(new Foo(1), new Foo(2), new Foo(3));
-        operateTemplate.execute(foos);
+        crane4jTemplate.execute(foos);
         System.out.println(foos);
     }
 

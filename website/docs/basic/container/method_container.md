@@ -192,28 +192,10 @@ public Set<Foo> onoToOneMethod(List<String> args) {
 在 Spring 环境中，针对方法容器的扫描和注册是自动完成的。不过你也可以手动完成这个过程：
 
 ~~~java
-// 从 Spring 容器中获取处理器和全局配置
-@Autowried
-private BeanMethodContainerRegistrar beanMethodContainerRegistrar;
-
-// 基于 Foo 的实例方法创建方法容器
+// 获取操作门面，如果在 Spring 环境也可以直接从 Spring 容器获取
+Crane4jTemplate crane4jTemplate = Crane4jTemplate.withDefaultConfiguration();
 Foo foo = new Foo();
-beanMethodContainerRegistrar.register(foo, Foo.class);
-~~~
-
-如果你是在非 Spring 环境中，那么你需要先通过以下代码手动构建 `MethodContainerAnnotationProcessor` 实例，然后再手动注册：
-
-~~~java
-// 构建方法容器处理器
-Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
-MethodContainerAnnotationProcessor processor = ConfigurationUtil.createContainerMethodAnnotationProcessor(configuration);
-
-// 从目标对象上解析方法容器
-Foo foo = new Foo();
-Collection<Container<Object>> containers = processor.process(foo, Foo.getClass());
-
-// 将方法容器注册到全局配置对象中
-containers.forEach(configuration::registerContainer);
+crane4jTemplate.opsForContainer().registerMethodContainers(foo);
 ~~~
 
 ## 7.包装类提取

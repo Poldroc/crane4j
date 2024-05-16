@@ -1,8 +1,6 @@
 # 注册数据源容器
 
-## 1.在 Spring 环境
-
-### 1.1.自动注册
+## 1..自动注册
 
 在 Spring 环境中，你可以将你的容器直接交给 Spring 管理，项目启动后 crane4j 将会自动注册：
 
@@ -36,32 +34,14 @@ public class Crane4jExampleConfiguration {
 
 :::
 
-### 1.2.手动注册
+## 2.手动注册
 
-此外，你也可以从 Spring 容器获取 `ContainerManager` 后进行手动注册：
-
-~~~java
-@Component
-public class Crane4jContainerRegistrar implements ApplicationRunner {
-  
-		@Autowired
-  	private ContainerManager containerManager;
-  
-    @Override
-    public void run(ApplicationArguments args) {
-      	Container<Integer> containers = Containers.<Integer>forMap("test", Collections.emptyMap());
-      	containerManager.registerContainer(containers);
-    }
-}
-~~~
-
-## 2.在非 Spring 环境
-
-在非 Spring 环境中，你可以直接将容器注册到全局配置对象 `Crane4jGlobalConfiguration` 中：
+此外，无论是在 Spring 环境或者非 Spring 环境中，你都快通过操作门面后手动注册容器：
 
 ~~~java
-Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
-Container<Integer> containers = Containers.<Integer>forMap("test", Collections.emptyMap());
-configuration.registerContainer(containers);
+// 获取操作门面，如果是在 Spring 环境则可以直接从 Spring 容器获取
+Crane4jTemplate crane4jTemplate = Crane4jTemplate.withDefaultConfiguration();
+crane4jTemplate.opsForContainer().registerContainer(container);
 ~~~
 
+此外，操作门面也针对某些数据结构提供了一些便捷的 API。

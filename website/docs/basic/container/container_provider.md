@@ -13,8 +13,10 @@ crane4j 默认提供了 `PartitionContainerProvider` 作为常用实现类，它
 当你创建了一个实例后，若你在非 Spring 环境中，你需要将其手动注册到全局配置中：
 
 ~~~java
-SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
-configuration.registerContainerProviderput("fooContainerProvider", xxxContainerProvider);
+// 创建操作门面
+Crane4jTemplate crane4jTemplate = Crane4jTemplate.withDefaultConfiguration();
+crane4jTemplate.opsForContainer()
+  .registerContainerProvider("fooContainerProvider", xxxContainerProvider);
 ~~~
 
 如果你是在 Spring 环境，那么你直接将其交给 Spring 管理即可，在项目启动后它会自动注册。

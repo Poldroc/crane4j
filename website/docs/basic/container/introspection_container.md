@@ -29,14 +29,21 @@ public class Foo {
 在使用前，你需要向 `AssembleKeyAnnotationHandler` 注册指定的值映射策略，这里我们以手机号脱敏为例：
 
 ~~~java
-// 从 spring 容器获取 AssembleKeyAnnotationHandler
-AssembleKeyAnnotationHandler handler = SpringUtil.getBean(AssembleKeyAnnotationHandler.class);
-handler.registerValueMapperProvider("phone_number_desensitization", element -> 
-	key -> { // 将手机号中间四位替换为 *
-        String phone = (String)key;
-        return phone.substring(0, 3) + "****" + phone.substring(7);
-    }
-);
+// 创建一个操作门面，在 Spring 环境中你也可以直接从 Spring 容器获取
+Crane4jTemplate crane4jTemplate = Crane4jTemplate.withDefaultConfiguration();
+Crane4jTemplate crane4jTemplate = Crane4jTemplate.withDefaultConfiguration();
+  crane4jTemplate.opsForComponent().configureOperationAnnotationHandler(
+      // 获取注解处理器
+      AssembleKeyAnnotationHandler.class, (t, handler) -> {
+          // 注册一个键值映射策略
+          handler.registerValueMapperProvider("phone_number_desensitization", element ->
+              key -> { // 将手机号中间四位替换为 *
+                  String phone = (String)key;
+                  return phone.substring(0, 3) + "****" + phone.substring(7);
+              }
+          );
+      }
+  );
 ~~~
 
 在 Spring 环境中，你也可以直接实现 `AssembleKeyAnnotationHandler.ValueMapperProvider` 接口，并将其交给 Spring 容器管理，crane4j 在启动后将会自动注册。
