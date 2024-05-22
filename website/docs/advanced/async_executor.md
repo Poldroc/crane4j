@@ -10,9 +10,7 @@
 
 ## 1.启用执行器
 
-### 1.1.在 Spring 环境
-
-在 Spring 中，已经默认注册了一个异步执行器，它默认使用的线程池配置如下：
+**Crane4j 会在一开始就会配置好一个默认的异步执行器**，它默认使用的线程池配置如下：
 
 ~~~java
 ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -27,11 +25,9 @@ executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 executor.setThreadNamePrefix("crane4j-async-executor");
 ~~~
 
-如果你需要更换线程池，你可以通过配置类重新配置执行器，它将会覆盖 Crane4j 中的默认配置。
+如果你不需要修改配置，那么直接使用即可。
 
-### 1.2.在非 Spring 环境
-
-在非 Spring 环境中，你可以直接将其注册到 Crane4j 全局配置类中：
+在 Spring 环境中，如果你需要更换线程池，你可以通过配置类重新配置执行器，它将会覆盖 Crane4j 中的默认配置。而在非 Spring 环境，你可以通过下述方法进行替换：
 
 ~~~java
 // 创建线程池
@@ -81,9 +77,9 @@ public List<Foo> getFoo(Integer type) {
 
 ~~~java
 List<Foo> foos = fooService.list();
-OperateTemplate template = SpringUtil.getBean(OperateTemplate.class);
-AsyncBeanOperationExecutor operationExecutor = SpringUtil.getBean(AsyncBeanOperationExecutor.class);
-OperateTemplate.execute(foos, operationExecutor, op -> true);
+// 从 Spring 容器获取操作门面
+Crane4jTemplate template = SpringUtil.getBean(Crane4jTemplate.class);
+template.executeAsync(foos);
 ~~~
 
 ### 2.3.在操作者接口中使用

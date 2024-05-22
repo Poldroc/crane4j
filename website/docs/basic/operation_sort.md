@@ -49,42 +49,33 @@ public class Student {
 
 需要注意的是，**有时候排序值并不一定代表最终的执行顺序**，它只代表在遍历 `BeanOperations` 中的装配操作时的顺序。
 
-最终的执行顺序要通过 `BeanOperationExecutor` 来保证，如果你希望按顺序执行，则需要**手动的指定操作执行器为有序执行器** `OrderedBeanOperationExecutor` ：
+最终的执行顺序要通过 `BeanOperationExecutor` 来保证，如果你希望按顺序执行，则需要**手动的指定操作执行器为有序执行器** `OrderedBeanOperationExecutor`。
+
+### 2.1.手动填充
+
+如果你需要在手动填充时指定按顺序填充，那么你可以直接在使用操作门面的 `executeOrdered` 方法：
 
 ~~~java
-public class Student {
+// 从 Spring 容器获取操作门面
+Crane4jTemplate template = SpringUtil.getBean(Crane4jTemplate.class);
+template.executeOrdered(Arrays.asList(
+	new Student(1), new Student(2), new Student(3)
+));
+~~~
 
-    @Assemble(
-        container = "student", sort = 0, 
-        props = { @Mapping("name"), @Mapping("classroomId") }
-    )
-    private Integer id;
-    private String name;
+### 2.2.自动填充
 
-    @Assemble(
-        container = "classroot", sort = 1, 
-        props = {
-            @Mapping(src ="name", ref = "classroomName"),
-            @Mapping(src ="headTeacherId", ref = "headTeacherId"),
-        }
-    )
-    private Integer classroomId;
-    private Integer classroomName;
+如果你使用的是自动填充，那么你需要在 `@AutoOperate` 注解中指定使用 `OrderedBeanOperationExecutor` 执行器：
 
-    @Assemble(
-        container = "teacher", sort = 2, 
-        props = @Mapping(src = "name", ref = "headTeacherName")
-    )
-    private Integer headTeacherId;
-    private Integer headTeacherName;
-}
-
+~~~java
 // 显式指定操作执行器
 @AutoOperate(type = Student.class, executorType = OrderedBeanOperationExecutor.class)
 public List<Student> listStudent(List<Integer> ids) {
     // do something
 }
 ~~~
+
+
 
 :::tip
 
