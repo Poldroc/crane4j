@@ -1,6 +1,6 @@
 import {defineConfig} from 'vitepress'
 
-const basePath = '/crane4j/';
+const basePath = '/';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
