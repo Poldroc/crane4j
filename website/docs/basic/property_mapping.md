@@ -374,14 +374,15 @@ public class CustomMappingStrategy implements PropertyMappingStrategy {
 
 **注册策略**
 
-在 Spring 环境中，你只需要将自定义策略交由 Spring 容器管理即可，项目启动后 crane4j 会自动注册。
-
-而在非 Spring 环境中，你可以直接将其注册到 `SimpleCrane4jGlobalConfiguration` 中：
+在 Spring 环境中，你只需要将自定义策略交由 Spring 容器管理即可，项目启动后 crane4j 会自动注册。不过你也可以通过操作门面类手动注册：
 
 ~~~java
-SimpleCrane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
 PropertyMappingStrategy customStrategy = CustomPropertyMappingStrategy();
-configuration.addPropertyMappingStrategy(customStrategy);
+
+// 从 Spring 容器获取操作门面
+Crane4jTemplate template = SringUtil.getBean(Crane4jTemplate.class);
+template.opsForComponent()
+    .registerPropertyMappingStrategy(customStrategy);
 ~~~
 
 **引用策略**

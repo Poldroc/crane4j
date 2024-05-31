@@ -16,7 +16,7 @@ crane4j 默认提供了三种处理器：
 
 ```java
 public class Foo {
-    @Assemble(container = "foo", handler = "oneToOneAssembleOperationHandler")
+    @Assemble(container = "foo", handlerType = OneToOneAssembleOperationHandler.class)
     private String name;
     private String alias;
 }

@@ -384,8 +384,9 @@ public class ConditionOnTargetSerializableParser
 而在非 Spring 环境中，你需要通过全局配置获取该组件，并手动完成注册：
 
 ~~~java
-Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
-ConditionalTypeHierarchyBeanOperationParser parser = configuration.getBeanOperationParser(ConditionalTypeHierarchyBeanOperationParser.class);
-parser.registerConditionParser(new ConditionOnTargetSerializableParser());
+// 从 Spring 容器获取操作门面
+Crane4jTemplate template = SringUtil.getBean(Crane4jTemplate.class);
+template.opsForComponent()
+  .registerConditionParser(new ConditionOnTargetSerializableParser());
 ~~~
 

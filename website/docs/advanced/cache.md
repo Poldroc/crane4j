@@ -244,3 +244,11 @@ public class CustomCacheManager extends AbstractCacheManager {
 }
 ~~~
 
+如果在 Spring 环境，你将该管理器直接交由 Spring 容器管理即可，项目启动后将会自动注册。不过你也可以通过操作门面手动注册这个管理器：
+
+~~~java
+Crane4jTemplate crane4jTemplate = SpringUtil.getBean(Crane4jTemplate.class);
+crane4jTemplate.opsForComponent()
+  	.registerCacheManager(new CustomCacheManager());
+~~~
+

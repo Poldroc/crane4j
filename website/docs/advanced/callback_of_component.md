@@ -16,9 +16,14 @@
 - `ContainerRegisterLogger`：在容器生命周期的三个关键节点输出相关信息；
 - `ContainerInstanceLifecycleProcessor`：用于支持 `Container.Lifecycle` 的 `init` 和 `destroy` 方法。
 
-当你创建了一个处理器时，你可以通过全局配置 `Crane4jGlobalConfiguration` 的 `registerContainerLifecycleProcessor` 方法注册它。
+当你创建了一个处理器时，如果在 Spring 环境，你只需将其交给 Spring 管理即可，在启动后 crane4j 会自动注册。不过你也可以通过操作门面手动注册它：
 
-而如果在 Spring 环境，你只需将其交给 Spring 管理即可，在启动后 crane4j 会自动注册。
+~~~java
+// 从 Spring 容器获取操作门面
+Crane4jTemplate crane4jTemplate = SpringUtil.getBean(Crane4jTemplate.class);
+crane4jTemplate.opsForComponent()
+  	.registerContainerLifecycleProcessor(new CustomLifecycleProcessor());
+~~~
 
 ## 2.容器生命周期接口
 

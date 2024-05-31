@@ -77,14 +77,12 @@ public class FooService {
 
 **在非 Spring 环境**
 
-在非 Spring 环境，你需要手动的创建代理工厂，然后才能基于代理工厂为接口创建代理对象：
+在非 Spring 环境，你可以通过操作门面手动创建代理对象：
 
 ~~~java
-// 创建操作者接口的代理工厂
-Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
-OperatorProxyFactory proxyFactory = ConfigurationUtil.createOperatorProxyFactory(configuration);
-// 通过代理工厂创建代理对象
-OperatorInterface operator = proxyFactory.get(OperatorInterface.class);
+Crane4jTemplate crane4jTemplate = SpringUtil.getBean(Crane4jTemplate.class);
+OperatorInterface operator = crane4jTemplate.opsForProxy()
+    .createOperatorProxy(OperatorInterface.class);
 ~~~
 
 ### 1.3.对入参进行填充
@@ -265,4 +263,11 @@ private interface OperatorInterface {
 
 当有多个方法工厂时，将会使用首个匹配的工厂去生成代理方法。因此，若有必要，用户也可以自行实现接口并提高工厂的优先级以替换默认策略。
 
-在 Spring 环境中，只需将自定义工厂类声明为 Spring Bean，即可自动注册。在非 Spring 环境中，用户需要在创建代理工厂 `OperatorProxyFactory` 时将所需的方法工厂作为参数传入。
+在 Spring 环境中，只需将自定义工厂类声明为 Spring Bean，即可自动注册，不过你也可以通过操作门面手动注册：
+
+~~~java
+Crane4jTemplate crane4jTemplate = SpringUtil.getBean(Crane4jTemplate.class);
+crane4jTemplate.opsForProxy()
+    .registerOperatorProxyMethodFactory(new CustomMethodFactory());
+~~~
+

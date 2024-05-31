@@ -73,7 +73,7 @@ public @interface Dict {
 
 ~~~java
 @Component
-public class DictAnnotationHandler extends InternalProviderAssembleAnnotationHandler<Dict> {
+public class DictAnnotationHandler extends AbstractInternalProviderAssembleAnnotationHandler<Dict> {
 
     // 通过依赖注入获取字典服务
     @Autowired
@@ -129,18 +129,13 @@ public class DictAnnotationHandler extends InternalProviderAssembleAnnotationHan
 
 **注册注解处理器**
 
-在 Spring 环境中，你只需要将该注解处理器交由 Spring 容器管理即可，启动后 crane4j 会自动进行注册。
-
-而在非 spring 环境，你可以直接将其注册到配置解析器 `TypeHierarchyBeanOperationParser` 即可生效：
+在 Spring 环境中，你只需要将该注解处理器交由 Spring 容器管理即可，启动后 crane4j 会自动进行注册。不过你也可以通过操作门面手动注册它：
 
 ~~~java
-// 获取配置解析器
-Crane4jGlobalConfiguration configuration = SimpleCrane4jGlobalConfiguration.create();
-TypeHierarchyBeanOperationParser parser = configuration.getBeanOperationParser(TypeHierarchyBeanOperationParser.class);
-
-// 注册注解处理器
 DictAnnotationHandler handler = new DictAnnotationHandler(
 	new SimpleAnnotationFinder(), configuration, configuration
 );
-parser.addOperationAnnotationHandler(handler);
+Crane4jTemplate crane4jTemplate = SpringUtil.getBean(Crane4jTemplate.class);
+crane4jTemplate.opsForComponent()
+  	.registerOperationAnnotationHandler(handler);
 ~~~

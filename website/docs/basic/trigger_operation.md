@@ -2,39 +2,24 @@
 
 当你在类中配置好了要执行的填充操作后，你需要触发操作的执行，然后才能真正完成填充。
 
-crane4j 支持手动和自动填充，前者通常通过执行器 `BeanOperationExecutor` 或工具类 `OperateTemplate` 在代码中完成，后者一般在与 Spring 集成后，通过 SpringAOP 在方法调用前后自动完成。
+crane4j 支持手动和自动填充，前者通常通过操作门面 `Crane4jTemplate` 或执行器 `BeanOperationExecutor` 在代码中完成，后者一般在与 Spring 集成后，通过 SpringAOP 在方法调用前后自动完成。
 
 ## 1.手动填充
 
 手动填充分为两种方式，一种方式是直接使用 `OperateTemplate` 工具类，另一种则是直接使用最底层的 `BeanOperationExecutor` 的 API 完成，一般我们推荐使用第一种。
 
-### 1.1.使用 OperateTemplate
-
-`OperateTemplate` 是 `crane4j` 提供的工具类，命名参考了 Spring 提供的各种 `XXXTemplate`：
+`Crane4jTemplate` 是 `crane4j` 提供的操作门面，命名参考了 Spring 提供的各种 `XXXTemplate`，你可以通过它使用 crane4j 几乎所有的功能：
 
 ~~~~java
 List<Foo> foos = fooService.list();
-OperateTemplate template = SpringUtil.getBean(OperateTemplate.class);
-OperateTemplate.execute(foos);
+// 如果在 Spring 环境可以直接从 Spring 容器获取
+Crane4jTemplate template = SpringUtil.getBean(Crane4jTemplate.class);
+template.execute(foos); // 同步填充
+template.executeAsync(foos); // 异步填充
+template.executeOrdered(foos); // 顺序填充
 ~~~~
 
-`OperateTemplate` 可以按照默认配置完成整个填充流程，但它也提供了多种重载方法，允许你在参数中指定要使用的组件或过滤器。
-
-### 1.2.使用执行器
-
-另一种是先使用配置解析器 `BeanOperationParser` 获得配置对象，然后再使用执行器 `BeanOperationExecutor` 完成操作：
-
-~~~java
-// 获取操作配置
-BeanOperationParser parser = SpringUtil.getBean(BeanOperationParser.class);
-BeanOperations operation = parser.parse(Foo.class);
-// 根据操作配置执行填充
-BeanOperationExecutor executor = SpringUtil.getBean(BeanOperationExecutor.class);
-List<Foo> foos = fooService.list();
-executor.execute(foos, operation);
-~~~
-
-一般很少会直接使用这种方式完成。
+此外，`Crane4jTemplate` 还提供了一些有用的重载方法，你可以在里面指定过滤器或执行器。
 
 ## 2.自动填充
 
