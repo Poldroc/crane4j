@@ -56,7 +56,6 @@ public class MethodResultAutoOperateAdvisor
                 .afterMethodInvoke(method, result, methodInvocation.getArguments());
         } catch (Exception ex) {
             log.error("cannot auto operate result for method [{}]", method, ex);
-            throw ex;
         }
         return result;
     }

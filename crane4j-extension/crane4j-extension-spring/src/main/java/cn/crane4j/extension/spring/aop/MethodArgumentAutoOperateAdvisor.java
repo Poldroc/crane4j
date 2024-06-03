@@ -66,7 +66,6 @@ public class MethodArgumentAutoOperateAdvisor
                 .beforeMethodInvoke(method, methodInvocation.getArguments());
         } catch (Exception ex) {
             log.error("cannot auto operate input arguments for method [{}]", method, ex);
-            throw ex;
         }
         return methodInvocation.proceed();
     }
