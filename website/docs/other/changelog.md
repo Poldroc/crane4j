@@ -425,3 +425,12 @@
 
 -   [移除` MappingType.NONE `与 `MappingType.MAPPED` 两个过时的 API](https://github.com/opengoofy/crane4j/issues/272)；
 -   [优化在 spring 环境中组件的初始化时机，避免过早初始化](https://github.com/opengoofy/crane4j/issues/269)；
+
+## 2.8.1 (2024-06-05)
+
+这是一个 Bug 修复版本，请尽快升级。
+
+**Fix**
+
+- [在依赖中排除 Ognl 后，SpringBoot 项目启动报错](https://github.com/opengoofy/crane4j/issues/301)；
+- [当通过 `@AutoOperate#on` 从返回值中提取待填充数据时，会偶发空指针异常](https://github.com/opengoofy/crane4j/issues/299)；
