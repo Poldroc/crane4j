@@ -75,11 +75,60 @@ public List<Student> listStudent(List<Integer> ids) {
 }
 ~~~
 
-
-
 :::tip
 
 - 拆卸操作也可以排序，不过它总是先于装配操作完成，所以一般情况下对拆卸操作排序没什么意义；
 - 关于执行器，请参照 "[基本概念](./../user_guide/basic_concept.md)" 一节中执行器部分内容；
 
 :::
+
+## 3.与嵌套填充配合使用
+
+出于批量操作的性能考虑，拆卸操作（即使用 `@Disassemble` 声明的嵌套填充操作）总是先于装配操作执行，因此你**无法通过类似下面这种方式来指定两者的执行顺序**：
+
+~~~java
+public class Dept {
+    
+  	// 根据部门管理查询员工，然后填充到 emps 属性
+    @Assemble(container = "emp", prop = ":emps", order = 1)
+    private Integer id;
+    
+  	// 对员工对象进行填充
+    @Disassemble(type = Emp.class, order = 2)
+    private List<Emp> emps;
+}
+~~~
+
+在实际执行时，crane4j 总是会先执行拆卸操作，将 Dept 对象中的 Emp 对象都提取出来，然后再执行 Dept 中根据 id 填充员工的装配操作，不过由于提取操作在填充之前，因此 crane4j 提取不到任何值，嵌套填充也就无法生效。
+
+如果你想要实现类似的效果，我们推荐在获取数据源时通过自动填充对数据源进行初步处理：
+
+~~~java
+@AutoOperate(type = Emp.class) // 直接在获取数据源的时候就填充
+@ContainerMethd(resultType = Emp.class)
+public List<Emp> listByIds(Collection<Integer> ids) {
+  	return empMapper.listByIds(ids);
+}
+~~~
+
+或者:
+
+~~~java
+@ContainerMethd(resultType = Emp.class)
+public List<Emp> listByIds(Collection<Integer> ids) {
+  	List<Emp> emps = empMapper.listByIds(ids);
+  	Crane4jTemplate template = SpringUtil.getBean(Crane4jTemplate.class); // 获取操作门面进行手动填充
+  	template.execute(emps);
+  	return emps;
+}
+~~~
+
+:::tip
+
+-   关于嵌套填充，具体可参见 [嵌套嵌套对象](./declare_disassemble_operation.md)；
+-   关于使用 `@AutoOperate` 配置自动填充，具体可参见 [触发填充操作](./trigger_operation.md) 中自动填充这一节；
+
+:::
+
+
+
