@@ -434,3 +434,12 @@
 
 - [在依赖中排除 Ognl 后，SpringBoot 项目启动报错](https://github.com/opengoofy/crane4j/issues/301)；
 - [当通过 `@AutoOperate#on` 从返回值中提取待填充数据时，会偶发空指针异常](https://github.com/opengoofy/crane4j/issues/299)；
+
+## 2.8.2 (2024-06-16)
+
+这是一个 Bug 修复版本，请尽快升级。
+
+**Fix**
+
+-   [使用 @ContainerCache 添加缓存后，即使缓存全部命中依然会调用查询方法](https://github.com/opengoofy/crane4j/issues/304)；
+-   [使用 Guava 缓存时，即使命中了缓存但是依然会查 DB，且 ID 都变成了NULL](https://github.com/opengoofy/crane4j/issues/305)；
