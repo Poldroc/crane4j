@@ -112,7 +112,7 @@ public class ClassBasedAutoOperateAnnotatedElementResolver extends AbstractAutoO
         }
         return (t, args) -> Optional.ofNullable(configuration.getPropertyOperator())
             .map(po -> po.findGetter(t.getClass(), on))
-            .orElseThrow(() -> new Crane4jException("cannot find getter for [{}] on [{}]", on, t.getClass()))
+            .orElseThrow(() -> new Crane4jException("Cannot find getter for [{}] on [{}]", on, t.getClass()))
             .invoke(t, args);
     }
 

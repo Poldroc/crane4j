@@ -131,7 +131,7 @@ public class MethodBasedAutoOperateAnnotatedElementResolver extends AbstractAuto
         } else if (element instanceof Parameter) {
             return ((Parameter)element).getType();
         } else {
-            throw new Crane4jException("cannot resolve type for annotated element [{}]", element);
+            throw new Crane4jException("Unable to parse the actual type of the annotated element [{}], is it a Parameter or Method?", element);
         }
     }
 }

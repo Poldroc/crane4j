@@ -91,7 +91,7 @@ public class MethodInvokerContainerCreator {
                 containerCreation.getDuplicateStrategy()
             );
         } else {
-            throw new Crane4jException("unsupported mapping type: " + mappingType);
+            throw new Crane4jException("Unsupported mapping type [{}] for method container [{}]", mappingType, containerCreation.getNamespace());
         }
         return container;
     }
@@ -127,7 +127,7 @@ public class MethodInvokerContainerCreator {
     protected MethodInvokerContainer doCreateOneToOneContainer(
         @Nullable Object target, MethodInvoker methodInvoker, @Nullable Method method, String namespace,
         Class<?> resultType, String resultKey, DuplicateStrategy duplicateStrategy) {
-        MethodInvokerContainer.KeyExtractor keyExtractor = getKeyExtractor(resultType, resultKey);
+        MethodInvokerContainer.KeyExtractor keyExtractor = getKeyExtractor(resultType, resultKey, namespace);
         return MethodInvokerContainer.oneToOne(namespace, methodInvoker, target, keyExtractor, duplicateStrategy);
     }
 
@@ -135,7 +135,7 @@ public class MethodInvokerContainerCreator {
     protected MethodInvokerContainer doCreateOneToManyContainer(
         @Nullable Object target, MethodInvoker methodInvoker, @Nullable Method method, String namespace,
         Class<?> resultType, String resultKey, DuplicateStrategy duplicateStrategy) {
-        MethodInvokerContainer.KeyExtractor keyExtractor = getKeyExtractor(resultType, resultKey);
+        MethodInvokerContainer.KeyExtractor keyExtractor = getKeyExtractor(resultType, resultKey, namespace);
         return MethodInvokerContainer.oneToMany(namespace, methodInvoker, target, keyExtractor);
     }
 
@@ -162,7 +162,7 @@ public class MethodInvokerContainerCreator {
      * @return key extractor
      */
     protected MethodInvokerContainer.@Nullable KeyExtractor getKeyExtractor(
-        Class<?> resultType, String resultKey) {
+        Class<?> resultType, String resultKey, String namespace) {
         MethodInvokerContainer.KeyExtractor keyExtractor;
         // fix https://gitee.com/opengoofy/crane4j/issues/I8UZH4
         // if the result type is a primitive type(or wrapper type), the key extractor is not required
@@ -172,10 +172,10 @@ public class MethodInvokerContainerCreator {
             return keyExtractor;
         }
         throw new Crane4jException(
-            "Cannot resolve key extractor from key [{}] on result type [{}],"
-                + "the result type must be a java bean or map collection, "
-                + "and the key must be a name of valid property.",
-            resultKey, resultType
+            "Failed to parse the method container [{}], "
+                + "because the extractor that gets the key [{}] from the return value type [{}] could not be obtained. "
+                + "Does the property exist in the return value type and is it readable?",
+            namespace, resultKey, resultType
         );
     }
 
