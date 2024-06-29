@@ -44,10 +44,10 @@
 
     <properties>
         <!--revision-->
-        <revision>2.8.0</revision>
+        <revision>2.9.0</revision>
         <!--build-->
         <java.version>1.8</java.version>
-        <server.id>maven-central</server.id>
+        <server.id>central.sonatype.com</server.id>
         <!--dependents-->
         <hutool.version>5.8.26</hutool.version>
         <guava.version>33.0.0-jre</guava.version>
@@ -57,12 +57,13 @@
         <mybatis-plus.version>3.5.3.2</mybatis-plus.version>
         <jmh.version>1.32</jmh.version>
         <!--plugins-->
+        <central-publishing-maven-plugin.version>0.5.0</central-publishing-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <maven-javadoc-plugin>3.2.0</maven-javadoc-plugin>
         <maven-source-plugin>3.2.1</maven-source-plugin>
         <maven-compiler-plugin>3.8.0</maven-compiler-plugin>
         <maven-gpg-plugin>1.6</maven-gpg-plugin>
-        <skip.maven.gpg.plugin>true</skip.maven.gpg.plugin>
+        <skip.maven.gpg.plugin>false</skip.maven.gpg.plugin>
         <skip.jacoco.plugin>true</skip.jacoco.plugin>
     </properties>
 
@@ -162,6 +163,19 @@
 
     <build>
         <plugins>
+
+            <!-- central门户发布插件 -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${central-publishing-maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>${server.id}</publishingServerId>
+                    <waitUntil>published</waitUntil>
+                </configuration>
+            </plugin>
+
             <!-- 生成javadoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -251,6 +265,7 @@
                 </executions>
             </plugin>
 
+            <!-- 版本号占位符替换 -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
@@ -279,17 +294,17 @@
         </plugins>
     </build>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>${server.id}</id>
-            <name>oss Snapshots Repository</name>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>${server.id}</id>
-            <name>oss Staging Repository</name>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
+<!--    <distributionManagement>-->
+<!--        <snapshotRepository>-->
+<!--            <id>${server.id}</id>-->
+<!--            <name>oss Snapshots Repository</name>-->
+<!--            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>-->
+<!--        </snapshotRepository>-->
+<!--        <repository>-->
+<!--            <id>${server.id}</id>-->
+<!--            <name>oss Staging Repository</name>-->
+<!--            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
 
 </project>

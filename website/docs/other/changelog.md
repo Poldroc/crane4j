@@ -443,3 +443,30 @@
 
 -   [使用 @ContainerCache 添加缓存后，即使缓存全部命中依然会调用查询方法](https://github.com/opengoofy/crane4j/issues/304)；
 -   [使用 Guava 缓存时，即使命中了缓存但是依然会查 DB，且 ID 都变成了NULL](https://github.com/opengoofy/crane4j/issues/305)；
+
+## 2.9.0 (2024-06-30)
+
+这是一个新特性版本，修复了一些已知问题，添加了一些新功能。
+
+具体内容参见：[Milestone](https://github.com/opengoofy/crane4j/milestone/13)。
+
+**Feature**
+
+-   [Crane4jTemplate 需要提供一个用于直接添加/刷新容器缓存数据的 API](https://github.com/opengoofy/crane4j/issues/316)；
+-   [拆卸操作支持非平铺模式](https://github.com/opengoofy/crane4j/issues/311)；
+-   [多对多装配时，若被 ref 指向的字段是字符串，则自动按指定的分隔符拼接为字符串](https://github.com/opengoofy/crane4j/issues/307)；
+-   [提供 `@AssembleDB` 注解，支持基于自定义 SQL 的数据源容器](https://github.com/opengoofy/crane4j/issues/40)；
+-   
+
+**Fix**
+
+-   [使用 @ContainerCache 添加缓存后，即使缓存全部命中依然会调用查询方法](https://github.com/opengoofy/crane4j/issues/304)；
+-   [使用 Guava 缓存时，即使命中了缓存但是依然会查 DB，且 ID 都变成了NULL](https://github.com/opengoofy/crane4j/issues/305)；
+-   [在依赖中排除 Ognl 后，SpringBoot 项目启动报错](https://github.com/opengoofy/crane4j/issues/301)；
+-   [当通过 `@AutoOperate#on` 从返回值中提取待填充数据时，会偶发空指针异常](https://github.com/opengoofy/crane4j/issues/299)；
+
+**Refactor**
+
+-   [重构 MP 插件](https://github.com/opengoofy/crane4j/issues/234)；
+-   [基于 AOP 自动填充时，若填充失败时，应当仅打印日志而不是直接抛出异常](https://github.com/opengoofy/crane4j/issues/300)；
+-   [移除 `@EnableCrane4j` 等相关注解](https://github.com/opengoofy/crane4j/issues/291)；
