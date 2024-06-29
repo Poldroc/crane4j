@@ -18,7 +18,7 @@
         <module>crane4j-extension-mybatis-plus</module>
         <module>crane4j-extension-jackson</module>
         <module>crane4j-extension-redis</module>
-        <module>crane4j-extension-query</module>
+        <module>crane4j-extension-datasource</module>
     </modules>
 
     <dependencies>

@@ -25,6 +25,7 @@ public @interface AssembleMp {
      * The data source to be used.
      *
      * @return data source
+     * @see cn.crane4j.extension.mybatis.plus.AssembleMpAnnotationHandler.DataSourceSwitcher;
      */
     String datasource() default "";
 

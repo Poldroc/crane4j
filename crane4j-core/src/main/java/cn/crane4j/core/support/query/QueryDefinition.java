@@ -1,4 +1,4 @@
-package cn.crane4j.extension.query;
+package cn.crane4j.core.support.query;
 
 import cn.crane4j.annotation.DuplicateStrategy;
 import cn.crane4j.annotation.MappingType;

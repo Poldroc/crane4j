@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>cn.crane4j</groupId>
-            <artifactId>crane4j-extension-query</artifactId>
+            <artifactId>crane4j-extension-datasource</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>

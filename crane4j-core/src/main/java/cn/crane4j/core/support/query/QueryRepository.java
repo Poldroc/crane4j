@@ -1,4 +1,4 @@
-package cn.crane4j.extension.query;
+package cn.crane4j.core.support.query;
 
 /**
  * Repository for orm.

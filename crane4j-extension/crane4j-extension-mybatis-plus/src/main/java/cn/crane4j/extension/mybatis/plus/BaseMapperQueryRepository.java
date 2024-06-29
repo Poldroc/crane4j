@@ -1,7 +1,7 @@
 package cn.crane4j.extension.mybatis.plus;
 
+import cn.crane4j.core.support.query.QueryRepository;
 import cn.crane4j.core.util.Asserts;
-import cn.crane4j.extension.query.QueryRepository;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;

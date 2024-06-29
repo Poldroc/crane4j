@@ -8,10 +8,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>crane4j-extension-query</artifactId>
+    <artifactId>crane4j-extension-datasource</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
-    <name>crane4j-extension-query</name>
+    <name>crane4j-extension-datasource</name>
 
     <dependencies>
         <!--test-->
