@@ -75,15 +75,17 @@ crane4j 将根据现有的条件自动查找最匹配的方法，因此 `bindMet
 
 在 `@ContainerMethod` 注解中，提供了一些可选的配置项：
 
-| API                    | 作用                                  | 类型                                             | 默认值                                                |
-| ---------------------- | ------------------------------------- | ------------------------------------------------ | ----------------------------------------------------- |
-| `namespace`            | 定义枚举容器的命名空间                | 任意字符串                                       | `Method#getName`                                      |
-| `type`                 | 映射类型，表示如何对结果集按 key 分组 | `MappingType` 枚举                               | `MappingType.ONE_TO_ONE`，即结果总是与 key 一对一分组 |
-| `duplicateStrategy`    | 当 key 出现重复值时的处理策略         | `DuplicateStrategy` 枚举                         | `DuplicateStrategy.ALERT`，出现重复值时直接抛异常     |
-| `resultKey`            | 分组的 key 值                         | 方法返回的对象列表的 key                         | `"id"`                                                |
-| `resultType`           | 返回值类型                            | 返回值参数类型（如果是集合，则为其中的元素类型） | 无，必填                                              |
-| `bindMethod`           | 绑定方法的名称                        | 方法名                                           | 当注解声明在类上时必填，声明在方法上时不填            |
-| `bindMethodParamTypes` | 绑定方法的参数类型                    | 方法参数类型                                     | 无，不填时默认获取首个符合条件的同名方法              |
+| API                         | 作用                                       | 类型                                             | 默认值                                                |
+| --------------------------- | ------------------------------------------ | ------------------------------------------------ | ----------------------------------------------------- |
+| `namespace`                 | 定义枚举容器的命名空间                     | 任意字符串                                       | `Method#getName`                                      |
+| `type`                      | 映射类型，表示如何对结果集按 key 分组      | `MappingType` 枚举                               | `MappingType.ONE_TO_ONE`，即结果总是与 key 一对一分组 |
+| `duplicateStrategy`         | 当 key 出现重复值时的处理策略              | `DuplicateStrategy` 枚举                         | `DuplicateStrategy.ALERT`，出现重复值时直接抛异常     |
+| `resultKey`                 | 分组的 key 值                              | 方法返回的对象列表的 key                         | `"id"`                                                |
+| `resultType`                | 返回值类型                                 | 返回值参数类型（如果是集合，则为其中的元素类型） | 无，必填                                              |
+| `bindMethod`                | 绑定方法的名称                             | 方法名                                           | 当注解声明在类上时必填，声明在方法上时不填            |
+| `bindMethodParamTypes`      | 绑定方法的参数类型                         | 方法参数类型                                     | 无，不填时默认获取首个符合条件的同名方法              |
+| `filterNullKey`             | 是否过滤入参集合中的 null 值               | boolean                                          | true                                                  |
+| `skipQueryIfKeyCollIsEmpty` | 入参集合为空时，是否跳过查询直接返回空集合 | boolean                                          | true                                                  |
 
 ## 3.对结果分组
 
@@ -244,7 +246,21 @@ public Result<List<UserVO>> listUser(List<Integer> ids) {
 
 :::
 
-## 8.选项式配置
+## 8.空值处理
+
+从 2.9.0 开始，`ContainerMethod` 注解添加了两个用于空值处理的属性：
+
+**filterNullKey**
+
+该配置表示是否需要过滤入参集合中的空值，为 true 时，如果方法入参为 `[null, null, 1, 3, null, 4]`，那么最终在调用方法前里面的 null 值会被过滤，最后实际的调用参数为 `[1, 3, 4]`。
+
+**skipQueryIfKeyCollIsEmpty**
+
+该配置表示当入参集合为空时，是否不调用方法而直接返回空集合。
+
+并且，当 `filterNullKey` 配置为 true 时，将会先过滤控制再做判断，比如当入参为 `[null, null]` 的时候，方法就不会被调用。
+
+## 9.选项式配置
 
 在 2.2 及以上版本，你可以使用 `@AssembleMethod` 注解进行选项式风格的配置。通过在类或属性上添加 `@AssembleMethod` 注解，并指定要绑定的目标类中的指定方法。
 

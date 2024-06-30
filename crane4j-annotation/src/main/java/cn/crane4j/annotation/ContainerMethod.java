@@ -138,7 +138,13 @@ public @interface ContainerMethod {
     String on() default "";
 
     /**
-     * <p>Whether to filter null keys.
+     * <p>Whether to filter null keys. <br/>
+     * for example:
+     * <pre type="code">{@code
+     * [null, null] -> []
+     * [null, 1, 2, null, 3] -> [1, 2, 3]
+     * [1, 2, 3] -> [1, 2, 3]
+     * }</pre>
      *
      * @return boolean
      * @since 2.9.0
