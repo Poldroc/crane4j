@@ -182,6 +182,8 @@ public class ExampleService {
 -   关于嵌套填充，具体可参见 [嵌套嵌套对象](./declare_disassemble_operation.md)；
 -   关于使用 `@AutoOperate` 配置自动填充，具体可参见 [触发填充操作](./trigger_operation.md) 中自动填充这一节；
 
+:::
+
 :::warning
 
 当前版本的递归执行器实际上是基于栈实现的，因此一般情况下不必担心栈溢出。
