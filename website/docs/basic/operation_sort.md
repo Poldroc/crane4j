@@ -84,7 +84,9 @@ public List<Student> listStudent(List<Integer> ids) {
 
 ## 3.与嵌套填充配合使用
 
-出于批量操作的性能考虑，拆卸操作（即使用 `@Disassemble` 声明的嵌套填充操作）总是先于装配操作执行，因此你**无法通过类似下面这种方式来指定两者的执行顺序**：
+### 3.1.平铺操作执行器
+
+出于批量操作的性能考虑，当使用默认的操作执行器时，拆卸操作（即使用 `@Disassemble` 声明的嵌套填充操作）总是先于装配操作执行，因此你**无法通过类似下面这种方式来指定两者的执行顺序**：
 
 ~~~java
 public class Dept {
@@ -125,10 +127,65 @@ public List<Emp> listByIds(Collection<Integer> ids) {
 
 :::tip
 
+-   关于执行器，可参见 [基本概念](./../user_guide/basic_concept.md) 中操作执行器部分；
 -   关于嵌套填充，具体可参见 [嵌套嵌套对象](./declare_disassemble_operation.md)；
 -   关于使用 `@AutoOperate` 配置自动填充，具体可参见 [触发填充操作](./trigger_operation.md) 中自动填充这一节；
 
 :::
 
+### 3.2.递归操作执行器
 
+在 2.9.0 及以上版本，新增了三个支持递归填充的操作执行器，它们支持先执行装配操作，再执行拆卸操作，然后再对提取出来的嵌套对象执行装配操作……直到递归完成整个填充过程：
 
+-   `DisorderedBeanOperationRecursiveExecutor`：递归版本的 `DisorderedBeanOperationExecutor`；
+-   `OrderedBeanOperationRecursiveExecutor`：递归版本的 `OrderedBeanOperationExecutor`
+-   `AsyncBeanOperationRecursiveExecutor`：递归版本的 `AsyncBeanOperationExecutor`；
+
+它们的操作逻辑非常类似于树的递归构件过程，你可以基于下面的示例感受一下：
+
+~~~java
+@Component
+public class NodeService {
+  	@ContainerMethod(namespace = "children", resultType = Node.class)
+  	public List<Node> selectChildrenNodesById(String nodeId) {
+      	// 根据节点ID查询子节点
+    }
+}
+
+@Data
+@RequiredArgsConstructor
+public static class Node {
+  	// 根据 ID 填充子节点，然后再递归子节点重复该填充过程
+    @Assemble(container = "children", prop = ":children")
+    private final Integer id;
+    private String name;
+    @Disassemble(type = Foo.class)
+    private List<Node> children;
+}
+
+@Service
+public class ExampleService {
+  
+  	// 指定执行器为无序的递归执行器
+  	@AutoOperate(executorType = OrderedBeanOperationRecursiveExecutor.class)
+  	public Node getTree(String id) {
+      	return new Node(0);
+    }
+}
+~~~
+
+在上述代码中，你只需返回一个根节点，执行器将根据你的配置为你完成树的构建。
+
+:::tip
+
+-   关于执行器，可参见 [基本概念](./../user_guide/basic_concept.md) 中操作执行器部分；
+-   关于嵌套填充，具体可参见 [嵌套嵌套对象](./declare_disassemble_operation.md)；
+-   关于使用 `@AutoOperate` 配置自动填充，具体可参见 [触发填充操作](./trigger_operation.md) 中自动填充这一节；
+
+:::warning
+
+当前版本的递归执行器实际上是基于栈实现的，因此一般情况下不必担心栈溢出。
+
+不过由于在每一层级都要进行查询，因此当层级过多的时候会比较影响性能，为了保证性能，请不要在非必要的场景使用该类型的执行器。
+
+:::
