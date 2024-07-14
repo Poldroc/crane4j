@@ -157,15 +157,8 @@ public class AssembleMpAnnotationHandler
      */
     public interface DataSourceSwitcher {
 
-        DataSourceSwitcher DO_NOTING = new DataSourceSwitcher() {
-            @Override
-            public void beforeInvoke(String dataSource) {
-                // do nothing
-            }
-            @Override
-            public void afterInvoke(String dataSource) {
-                // do nothing
-            }
+        DataSourceSwitcher DO_NOTING = dataSource -> {
+            // do nothing
         };
 
         /**
@@ -180,7 +173,9 @@ public class AssembleMpAnnotationHandler
          *
          * @param dataSource data source name
          */
-        void afterInvoke(String dataSource);
+        default void afterInvoke(String dataSource) {
+            // do nothing
+        }
     }
 
     @RequiredArgsConstructor
