@@ -30,7 +30,7 @@
 
 ### 2.1.懒加载
 
-在 Spring 环境中，用户默认不需要进行额外的操作，`MybatisPlusQueryContainerProvider` 会在用户使用时根据 `beanName` 自动从 Spring 上下文中获得对应的 `Mapper`，并完成自动注册，即懒加载。
+在 Spring 环境中，用户默认不需要进行额外的操作，`AssembleMpAnnotationHandler` 会在用户使用时根据 `beanName` 自动从 Spring 上下文中获得对应的 `Mapper`，并完成自动注册，即懒加载。
 
 ### 2.2.自动注册
 
@@ -48,11 +48,11 @@ crane4j:
 
 ### 2.3.手动注册
 
-用户也可以获取 `MybatisPlusQueryContainerProvider` 进行手动注册：
+用户也可以获取 `AssembleMpAnnotationHandler` 进行手动注册：
 
 ~~~java
-MybatisPlusQueryContainerProvider register = SpringUtil.getBean(MybatisPlusQueryContainerProvider.class);
-register.registerRepository("xxxMapper", xxxMapper);
+AssembleMpAnnotationHandler handler = SpringUtil.getBean(AssembleMpAnnotationHandler.class);
+handler.registerRepository("xxxMapper", xxxMapper);
 ~~~
 
 ## 3.使用
@@ -192,7 +192,7 @@ public class FooVO {
 
 ## 5.对结果分组
 
-与方法容器类似，基于 MyBatis Plus 的查询也允许指定查询结果的一对一或一对多映射类型。例如：
+与方法容器类似，基于 MyBatisPlus 的查询也允许指定查询结果的一对一或一对多映射类型。例如：
 
 ```java
 public class DeptEmpVO {
@@ -210,3 +210,83 @@ public class DeptEmpVO {
 上述示例中，使用 `@AssembleMp` 注解指定在 `empMapper` 中根据部门 id 查询员工集合，然后按部门 id 进行一对多映射。最后，将员工集合中的员工名称映射到 `DeptEmpVO` 对象的 `empNames` 集合中。
 
 这样，我们可以实现多对一的映射关系。
+
+同样的，如果分组的时候 key 可能重复，那么你可以像使用 `@ContainerMethod` 配置数据源容器那样，通过 `duplicateStrategy` 属性来配置处理策略：
+
+~~~java
+public class DeptEmpVO {
+    @AssembleMp(
+        mapper = "empMapper", where = "deptId",
+      	duplicateStrategy = DuplicateStrategy.DISCARD_OLD, // 如果 key 重复，那么默认使用新覆盖旧
+        props = @Mapping(src = "name", ref = "deptNames")
+    )
+    private Integer deptId;
+    private List<String> empNames;
+}
+~~~
+
+## 6.多数据源
+
+Crane4j 提供指定指定数据源的方法，但是考虑不同的项目中实现多数据源的方案并不相同，因此这里不提供具体的实现。
+
+### 6.1.实现数据源切换器
+
+如果你希望指定使用某个特定的数据源来完成查询，那么你需要实现 `AssembleMpAnnotationHandler.DataSourceSwitcher` 接口，在里面定义具体的切换数据源的逻辑：
+
+~~~java
+public class ExampleDataSourceSwitcher 
+  	implements AssembleMpAnnotationHandler.DataSourceSwitcher {
+  	
+      @Override
+      public void beforeInvoke(String dataSource) {
+          // 在这里定义切换数据源的逻辑
+      }
+  
+      @Override
+      public void afterInvoke(String dataSource) {
+          // 在这里定义完成查询后清理上下文的逻辑
+      }
+}
+~~~
+
+### 6.2.注册切换器
+
+此后，你可以将该数据源切换器设置到 `AssembleMpAnnotationHandler` 中：
+
+~~~java
+public AssembleMpAnnotationHandler assembleMpAnnotationHandler(
+    AnnotationFinder annotationFinder, Crane4jGlobalConfiguration globalConfiguration,
+    MethodInvokerContainerCreator methodInvokerContainerCreator, BeanFactory beanFactory) {
+    AssembleMpAnnotationHandler handler = new AssembleMpAnnotationHandler(
+        annotationFinder, globalConfiguration, methodInvokerContainerCreator
+    );
+    handler.setRepositoryTargetProvider(new MapperLazyLoader(beanFactory));
+  
+  	// 设置数据源切换器
+    ExampleDataSourceSwitcher dss = new ExampleDataSourceSwitcher();
+  	handler.setDataSourceSwitcher(dss);
+  	
+    return handler;
+}
+~~~
+
+### 6.3.指定数据源
+
+最后，在使用的时候直接在 `@AssembleMp` 中通过 `datasource` 指定要使用的数据源即可：
+
+~~~java
+@AssembleMp(
+    mapper = "fooMapper",
+    where = "userName",
+  	datasource = "ds2" // 指定使用数据源
+)
+private String name;
+~~~
+
+:::warning
+
+考虑到一些多数据源的切换可能会依赖 `ThreadLocal` 实现，如果确实如此，那么你使用异步填充时可能需要注意一下上下文切换的问题。
+
+关于异步填充，具体请参见：[异步填充](./../advanced/async_executor.md)。
+
+:::
