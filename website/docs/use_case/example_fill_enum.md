@@ -36,7 +36,25 @@ public class Student {
 
 ## 2.使用
 
-首先，你需要在 `genderCode` 字段上通过 `@AssembleEnum` 注解声明一个装配操作：
+首先，你需要在枚举类上通过 `@ContainerEnum` 配置枚举的 key 和 value：
+
+~~~java
+@ContainerEnum(
+    key = "code", // key 为 Gender.code 字段值
+    value = "value" // value 为 Gender.value 字段值
+)
+@Acccessor(chain = true)
+@Data
+public class Student {
+  
+  	// 其他属性......
+  
+  	private Integer genderCode;
+  	private String genderName;
+}
+~~~
+
+然后，你需要在 `genderCode` 字段上通过 `@AssembleEnum` 注解声明一个装配操作：
 
 ~~~java
 @Acccessor(chain = true)
@@ -44,10 +62,6 @@ public class Student {
 public class Student {
   	@AssembleEnum(
         type = Gender.class, // 指定数据源为 Gender 枚举类
-        enums = @ContainerEnum(
-            key = "code", // key 为 Gender.code 字段值
-            value = "value" // value 为 Gender.value 字段值
-        ),
       	props = @Mapping(ref = "genderName") // 将 value 映射到 genderName 字段上
     )
   	private Integer genderCode;
